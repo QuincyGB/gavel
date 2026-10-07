@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gavel — The AI Small-Claims Court</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Clerk / backend status banner -->
+<div id="clerk-banner" class="clerk-banner hidden" role="alert">
+  <span class="clerk-dot"></span>
+  <span>The court clerk is unreachable — is the backend running on <strong>:8000</strong>?</span>
+  <button id="clerk-retry" type="button">Retry connection</button>
+</div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="gavel-seal" aria-hidden="true">
+      <div class="gavel">
+        <div class="gavel-head"></div>
+        <div class="gavel-handle"></div>
+      </div>
+      <div class="sound-block"></div>
+    </div>
+    <div class="masthead-text">
+      <h1>Gavel</h1>
+      <p class="tagline">The AI Small-Claims Court &mdash; binding arbitration by a panel of three</p>
+    </div>
+    <div id="clerk-status" class="clerk-status checking" title="Backend connection status">
+      <span class="pulse"></span><span id="clerk-status-text">Checking clerk&hellip;</span>
+    </div>
+  </div>
+  <nav class="progress" aria-label="Case progress">
+    <div class="step active" data-step="1"><span class="step-num">I</span><span class="step-label">File the dispute</span></div>
+    <div class="step-sep"></div>
+    <div class="step" data-step="2"><span class="step-num">II</span><span class="step-label">Deliberation</span></div>
+    <div class="step-sep"></div>
+    <div class="step" data-step="3"><span class="step-num">III</span><span class="step-label">Verdict</span></div>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ ACT I — FILE A DISPUTE ============ -->
+  <section id="act-file" class="act active" aria-label="File a dispute">
+    <div class="panel filing-panel">
+      <div class="panel-heading">
+        <h2>File a dispute</h2>
+        <p class="panel-sub">Both parties lock funds in escrow and pre-agree to a binding ruling. State your case below.</p>
+      </div>
+
+      <button id="demo-btn" type="button" class="demo-btn">
+        <span class="demo-icon">&#9878;</span> Load demo dispute
+        <span class="demo-hint">freelancer vs. client &middot; $500 unpaid invoice</span>
+      </button>
+
+      <form id="dispute-form" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="claimant-name">Claimant name</label>
+            <input id="claimant-name" name="claimant_name" type="text" placeholder="e.g. Maya Chen" required autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="respondent-name">Respondent name</label>
+            <input id="respondent-name" name="respondent_name" type="text" placeholder="e.g. Brightline Marketing LLC" required autocomplete="off">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="claim-title">Claim title</label>
+          <input id="claim-title" name="claim_title" type="text" placeholder="e.g. Unpaid invoice for website redesign" required autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label for="claim-description">Claim description</label>
+          <textarea id="claim-description" name="claim_description" rows="5" placeholder="What happened, what was agreed, and what went wrong&hellip;" required></textarea>
+        </div>
+
+        <div class="field amount-field">
+          <label for="amount-usdc">Amount in dispute</label>
+          <div class="amount-wrap">
+            <span class="amount-prefix">$</span>
+            <input id="amount-usdc" name="amount_usdc" type="number" min="0.01" step="0.01" placeholder="500.00" required>
+            <span class="amount-suffix">USDC</span>
+          </div>
+        </div>
+
+        <div class="form-grid evidence-grid">
+          <div class="field">
+            <label for="claimant-evidence">Claimant evidence <span class="label-note">one item per line</span></label>
+            <textarea id="claimant-evidence" name="claimant_evidence" rows="6" placeholder="Signed contract dated&hellip;&#10;Delivery confirmation email&hellip;&#10;Invoice #INV-2026-041&hellip;"></textarea>
+          </div>
+          <div class="field">
+            <label for="respondent-evidence">Respondent evidence <span class="label-note">one item per line</span></label>
+            <textarea id="respondent-evidence" name="respondent_evidence" rows="6" placeholder="Written complaint about the work&hellip;&#10;Photos, messages, receipts&hellip;"></textarea>
+          </div>
+        </div>
+
+        <div id="form-error" class="form-error hidden" role="alert"></div>
+
+        <button id="submit-btn" type="submit" class="submit-btn">
+          <span class="gavel-emoji">&#128074;</span>
+          <span id="submit-label">Bring the case to court</span>
+        </button>
+        <p class="escrow-note">Submitting locks <strong id="escrow-preview">$0.00 USDC</strong> in escrow from each party and opens the courtroom.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ ACT II — DELIBERATION ============ -->
+  <section id="act-court" class="act" aria-label="Deliberation">
+    <div class="courtroom">
+      <div class="court-heading">
+        <h2 id="case-caption">Case</h2>
+        <div id="phase-banner" class="phase-banner">
+          <span class="phase-pulse"></span>
+          <span id="phase-text">The court is in session&hellip;</span>
+        </div>
+      </div>
+
+      <div class="bench" id="bench" aria-label="The three justices">
+        <!-- justice cards injected by app.js -->
+      </div>
+
+      <div class="transcript-wrap">
+        <div class="transcript-head">
+          <h3>Official transcript</h3>
+          <span class="transcript-note">public record &middot; streamed live</span>
+        </div>
+        <div id="transcript" class="transcript" aria-live="polite"></div>
+        <div id="stream-error" class="stream-error hidden" role="alert"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACT III — VERDICT ============ -->
+  <section id="act-verdict" class="act" aria-label="Verdict">
+    <div class="verdict-panel">
+      <div class="seal">&#9878;</div>
+      <p class="verdict-kicker">The court has deliberated and hereby rules</p>
+      <h2 id="verdict-banner" class="verdict-banner">RULED FOR THE CLAIMANT</h2>
+      <p id="verdict-award" class="verdict-award"></p>
+
+      <div class="verdict-body">
+        <h3>Consolidated reasoning</h3>
+        <div id="verdict-reasoning" class="reasoning"></div>
+      </div>
+
+      <div class="hash-row">
+        <div class="hash-block">
+          <h3>Transcript SHA-256</h3>
+          <div class="hash-line">
+            <code id="transcript-hash" class="mono">—</code>
+            <button id="copy-hash" type="button" class="copy-btn" title="Copy full hash">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="chain-panel">
+        <h3>On-chain proof</h3>
+        <div class="chain-grid">
+          <div class="chain-field">
+            <span class="chain-label">Escrow contract</span>
+            <code id="escrow-address" class="mono">—</code>
+          </div>
+          <div class="chain-field">
+            <span class="chain-label">Anchoring transaction</span>
+            <code id="tx-hash" class="mono pending">pending on-chain anchoring</code>
+          </div>
+        </div>
+        <p id="chain-note" class="chain-note">The ruling hash will be anchored on-chain and the escrow will auto-pay the winner.</p>
+      </div>
+
+      <div class="verdict-actions">
+        <button id="full-transcript-btn" type="button" class="ghost-btn">Read full transcript</button>
+        <button id="new-case-btn" type="button" class="ghost-btn">File another dispute</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Gavel &middot; an AI small-claims court &middot; BLI Legal Tech Hackathon 2 &mdash; demo build</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
