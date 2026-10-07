@@ -177,6 +177,7 @@ const speechQueue = [];
 let speechBusy = false;
 let lastRound = null;
 let streamFinished = false;
+let lastSeq = -1;
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
@@ -358,6 +359,7 @@ function startDeliberation(id, payload) {
   currentDisputeId = id;
   verdictRendered = false;
   streamFinished = false;
+  lastSeq = -1;
   lastRound = null;
   speechQueue.length = 0;
   transcriptEl().innerHTML = "";
@@ -415,17 +417,26 @@ function connectStream(id, deliberatePromise) {
 
 function handleStreamEvent(evt, deliberatePromise) {
   if (!evt || typeof evt !== "object") return;
+  // Drop duplicate frames: the server replays the full transcript on every
+  // (re)connect, so a reconnect before the verdict would otherwise
+  // double-append every speech to the transcript.
+  if (typeof evt.seq === "number") {
+    if (evt.seq <= lastSeq) return;
+    lastSeq = evt.seq;
+  }
   const type = String(evt.type || "").toLowerCase();
 
   if (type === "verdict") {
     $("phase-text").textContent = "The verdict is in.";
+    // Close the stream NOW — before the queued speeches finish — so the
+    // EventSource can't reconnect and replay the transcript while we wait.
+    closeStream();
     // Let any queued speeches finish, then render the verdict from the
     // authoritative GET (the event may only be a signal).
     const waitForQueue = () => {
       if (speechBusy || speechQueue.length) {
         setTimeout(waitForQueue, 300);
       } else {
-        closeStream();
         finalizeFromServer();
       }
     };

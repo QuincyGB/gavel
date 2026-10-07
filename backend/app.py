@@ -117,8 +117,11 @@ def stream_dispute(dispute_id: str):
         raise HTTPException(404, "dispute not found")
 
     def event_gen():
-        for entry in dispute["transcript"]:
+        # seq lets the client drop duplicate frames: EventSource reconnects
+        # replay the whole transcript, which used to double-append speeches.
+        for seq, entry in enumerate(dispute["transcript"]):
             frame = {
+                "seq": seq,
                 "type": entry["type"],
                 "persona": entry.get("persona"),
                 "round": entry.get("round"),
