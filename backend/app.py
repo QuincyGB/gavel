@@ -13,6 +13,8 @@ import uuid
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 
 from deliberation import deliberate
 from providers import select_provider
@@ -29,6 +31,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve the courtroom SPA from the same service (single-deployment demo).
+# NOTE: mounted at the END of this file so /api/* routes match first.
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 # Provider chosen once at startup: Anthropic > OpenAI > Scripted.
 PROVIDER_NAME, PROVIDER = select_provider()
@@ -121,3 +127,9 @@ def stream_dispute(dispute_id: str):
             yield "data: " + json.dumps(frame, ensure_ascii=False) + "\n\n"
 
     return StreamingResponse(event_gen(), media_type="text/event-stream")
+
+
+# Static frontend mount LAST: Starlette matches routes in registration order,
+# so /api/* endpoints defined above keep priority over the SPA catch-all.
+if FRONTEND_DIR.is_dir():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")

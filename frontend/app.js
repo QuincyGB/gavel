@@ -12,7 +12,7 @@
 "use strict";
 
 /* ---------------- configuration ---------------- */
-const API_BASE = "http://localhost:8000";
+const API_BASE = "";
 // Escrow contract address shown in the "on-chain proof" panel.
 // Placeholder until the contract is deployed; the backend may also
 // return `escrow_address` inside the verdict object, which wins.
