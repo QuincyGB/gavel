@@ -1,0 +1,11 @@
+Narrator: Gavel. The AI small-claims court. Disputants lock funds in escrow. A panel of AI justices debates the evidence, in public. The ruling is hashed on-chain, and the escrow auto-pays the winner.
+
+Narrator: Here's a live trial. Maya Chen, a freelance designer, is claiming a five hundred dollar unpaid invoice from Brightline Media. She files her case with the clerk: the signed statement of work, the delivery confirmation, the read receipts. The defense gets its say too, and the case moves to deliberation.
+
+Narrator: The court is in session. Three AI justices take the bench. The Textualist reads the contract literally: payment was due on delivery, and there is no acceptance clause anywhere in the agreement. The Consumer Advocate weighs the power imbalance between a lone freelancer and a company that simply stopped paying. The Precedent Analyst tests every argument against past rulings, probing for the strongest counter-case. Every word streams into a public transcript that anyone can audit.
+
+Narrator: Round by round, the panel sharpens its positions. Openings lay out the theories. Rebuttals stress-test them. Closing positions lock in the reasoning. Then each justice votes, on the record, with reasons attached. No black box, no back room.
+
+Narrator: The panel divides, two to one. The majority rules for Maya Chen. A late revision request, raised after the deadline, cannot retroactively rewrite payment terms. Awarded: five hundred USDC. The full transcript is hashed with SHA-256, tamper-proof and on the record, and the escrow releases payment automatically.
+
+Narrator: Gavel. Justice that runs on code, not calendars. Built for the BLI Legal Tech Hackathon.
