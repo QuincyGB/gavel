@@ -252,10 +252,11 @@ function typeSpeech(evt, done) {
 
   const full = String(evt.text || "");
   const typed = article.querySelector(".typed");
-  // Reveal word-by-word: brisk enough to feel live, robust for long text.
+  // Reveal word-by-word at a stately, readable court pace.
   const words = full.split(/(\s+)/);
   let i = 0;
-  const CHUNK = 4;
+  const CHUNK = 2;
+  const STEP_MS = 70;
   const timer = setInterval(() => {
     let html = "";
     const end = Math.min(i + CHUNK, words.length);
@@ -271,7 +272,7 @@ function typeSpeech(evt, done) {
       if (evt.type === "vote") setVote(justice && justice.key, evt.text);
       done();
     }
-  }, 28);
+  }, STEP_MS);
 }
 
 function showStreamError(msg) {
