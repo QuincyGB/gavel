@@ -1,0 +1,1 @@
+Gavel. Justice that runs on code, not calendars. Built for the BLI Legal Tech Hackathon.

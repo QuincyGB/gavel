@@ -1,0 +1,1 @@
+Gavel. The AI small-claims court. Disputants lock funds in escrow. A panel of AI justices debates the evidence, in public. The ruling is hashed on-chain, and the escrow auto-pays the winner.
